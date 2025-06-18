@@ -9,44 +9,53 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(): JsonResponse
     {
         $events = Event::all();
         return response()->json($events, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Event $event): JsonResponse
+    public function show(Event $event): JsonResponse
     {
         return response()->json($event, 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+        ]);
+
+        $event = Event::create($validated);
+
+        return response()->json($event, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+
+    public function update(Request $request, Event $event): JsonResponse
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+        ]);
+
+        $event->update($validated);
+
+        return response()->json($event, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+
+    public function destroy(Event $event): JsonResponse
     {
-        //
+        $event->delete();
+        return response()->json(null, 204);
     }
 }
